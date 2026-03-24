@@ -1,1 +1,0 @@
-# Bs-ExamResPortal
