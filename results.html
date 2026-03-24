@@ -6,97 +6,172 @@
     <title>Results | BS Portal</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Table Styles */
+        .table-wrapper { 
+            overflow-x: auto; 
+            background: var(--card); 
+            border-radius: 20px; 
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+        table { width: 100%; border-collapse: collapse; color: var(--text); min-width: 400px; }
+        /* Table Styles - Column Header සහ Data මැදට ගැනීමට */
+    th { 
+    text-align: center; /* Header center කිරීමට */
+    padding: 15px; 
+    color: var(--accent); 
+    border-bottom: 2px solid var(--border); 
+    font-size: 0.8rem; 
+    text-transform: uppercase; 
+    }
+
+    td { 
+    text-align: center; /* Data center කිරීමට */
+    padding: 15px; 
+    border-bottom: 1px solid var(--border); 
+    font-size: 0.95rem; 
+    }
+        
+        .tab-container { display: flex; gap: 10px; margin: 25px 0; }
+        .tab { 
+            flex: 1; padding: 12px; border: 1px solid var(--border); background: var(--card); 
+            color: var(--text-dim); cursor: pointer; border-radius: 12px; font-weight: bold; transition: 0.3s;
+        }
+        .tab.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+        .search-container {
+            background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+            padding: 8px 15px; display: flex; align-items: center; gap: 10px; margin-bottom: 40px;
+        }
+        .search-container input { flex: 1; background: none; border: none; padding: 12px; color: white; outline: none; }
+    </style>
 </head>
 <body>
     <nav>
         <a href="index.html" class="logo">🎓 BS <span>PORTAL</span></a>
-        <a href="index.html" style="color:var(--accent); text-decoration:none; font-weight:bold;">Home</a>
+        <a href="batch.html" class="nav-btn">Back</a>
     </nav>
 
-    <div class="container">
-        <div class="card" style="padding: 12px; display: flex; gap: 10px; background: rgba(255,255,255,0.05);">
-            <input type="text" id="indexIn" placeholder="Student Index Number" style="flex:1; background:none; border:none; outline:none; color:white; padding:10px;">
-            <button onclick="searchResult()" class="btn">Search</button>
+    <div class="container" style="max-width: 800px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="font-size: 2.2rem; margin-bottom: 5px;">Exam Results</h1>
+            <p style="color: var(--text-dim);">ප්‍රගතිය බැලීමට ඔබේ අංකය ඇතුළත් කරන්න.</p>
         </div>
 
-        <div id="loader" style="display:none; text-align:center; margin: 40px;">
-            <div class="btn" style="background:none; border: 3px solid var(--accent); border-radius:50%; width:40px; height:40px; border-top-color:transparent; animation: spin 1s linear infinite;"></div>
+        <div class="search-container">
+            <input type="text" id="indexIn" placeholder="Index (e.g., BS/26/001)">
+            <button onclick="searchResult()" class="btn" style="width: auto;">Search</button>
         </div>
 
         <div id="resultContent" style="display: none;">
-            <div class="card" style="text-align: center;">
-                <p style="color: var(--text-dim); font-weight: bold;">ISLAND RANK</p>
-                <div class="rank-box">#04</div>
-                <h2 id="stuName">Sachintha Alahakoon</h2>
+            <div class="tab-container">
+                <button class="tab active" onclick="switchTab('unit', this)">Unit Tests</button>
+                <button class="tab" onclick="switchTab('mega', this)">Mega Exams</button>
             </div>
 
-            <div class="result-tabs">
-                <button class="tab active" onclick="switchExams('unit', this)">Unit Tests</button>
-                <button class="tab" onclick="switchExams('mega', this)">Mega Exams</button>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Exam Name</th>
+                            <th>Marks</th>
+                            <th>Rank</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody"></tbody>
+                </table>
             </div>
 
-            <div class="grid">
-                <div class="card">
-                    <h3 style="margin-bottom:20px; color:var(--accent);">Score History</h3>
-                    <div id="marksList"></div>
-                </div>
-                <div class="chart-box">
-                    <canvas id="myChart"></canvas>
+            <div class="card" style="padding: 20px;">
+                <p style="text-align: left; font-weight: bold; margin-bottom: 20px; color: var(--text-dim);">Performance Graph (Exam Number)</p>
+                <div style="height: 300px;">
+                    <canvas id="performanceChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Chart and logic as before, just matches new CSS
-        let chart;
-        const data = {
-            unit: [{n: "Unit 01", m: 85}, {n: "Unit 02", m: 78}],
-            mega: [{n: "Mega 01", m: 92}, {n: "Mega 02", m: 88}]
+        let myChart;
+
+        const examData = {
+            unit: Array.from({length: 18}, (_, i) => ({
+                id: i + 1,
+                name: `Unit Test ${i + 1}`,
+                marks: Math.floor(Math.random() * (95 - 45 + 1)) + 45,
+                rank: Math.floor(Math.random() * 50) + 1
+            })),
+            mega: Array.from({length: 6}, (_, i) => ({
+                id: i + 1,
+                name: `Mega Exam ${i + 1}`,
+                marks: Math.floor(Math.random() * (90 - 50 + 1)) + 50,
+                rank: Math.floor(Math.random() * 20) + 1
+            }))
         };
 
         function searchResult() {
-            document.getElementById('loader').style.display = 'block';
-            document.getElementById('resultContent').style.display = 'none';
-            setTimeout(() => {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('resultContent').style.display = 'block';
-                switchExams('unit', document.querySelector('.tab'));
-            }, 800);
+            if(!document.getElementById('indexIn').value) return;
+            document.getElementById('resultContent').style.display = 'block';
+            switchTab('unit', document.querySelector('.tab.active'));
         }
 
-        function switchExams(type, btn) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            btn.classList.add('active');
-            const list = document.getElementById('marksList');
-            list.innerHTML = data[type].map(i => `
-                <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border);">
-                    <span>${i.n}</span>
-                    <span style="font-weight:bold; color:var(--accent); font-size:1.1rem;">${i.m}</span>
-                </div>
-            `).join('');
-            updateChart(data[type]);
-        }
+        function switchTab(type, btn) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
 
-        function updateChart(cData) {
-            const ctx = document.getElementById('myChart').getContext('2d');
-            if(chart) chart.destroy();
-            chart = new Chart(ctx, {
+    const tbody = document.getElementById('resultsBody');
+    tbody.innerHTML = [...examData[type]].reverse().map(item => `
+        <tr>
+            <td style="font-weight:bold;">${item.name}</td>
+            <td style="color:var(--accent); font-weight:bold;">${item.marks}</td>
+            <td style="display: flex; justify-content: center;"> 
+                <span style="background:rgba(251,191,36,0.1); padding:4px 12px; border-radius:8px; color:var(--accent); min-width:80px; display:inline-block;">
+                    Rank ${item.rank}
+                </span>
+            </td>
+        </tr>
+    `).join('');
+
+    updateChart(examData[type]);
+    }
+
+        function updateChart(dataPoints) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            if (myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: cData.map(d => d.n),
+                    // මෙතන තමයි ලේබල් එක අංකයක් විතරක් වෙන්න හැදුවේ
+                    labels: dataPoints.map(d => d.id), 
                     datasets: [{
-                        label: 'Progress',
-                        data: cData.map(d => d.m),
-                        borderColor: '#f59e0b',
-                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        label: 'Marks',
+                        data: dataPoints.map(d => d.marks),
+                        borderColor: '#fbbf24',
+                        backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                        borderWidth: 3,
                         tension: 0.4,
-                        fill: true
+                        fill: true,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#fbbf24'
                     }]
                 },
-                options: { 
-                    responsive: true, maintainAspectRatio: false,
-                    scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                // Graph එක උඩට ගියාම "Test 01" කියලා පේන්න පොඩි trick එකක් දැම්මා
+                                label: (context) => ` Marks: ${context.raw}%`
+                            }
+                        }
+                    }
                 }
             });
         }
