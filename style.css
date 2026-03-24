@@ -1,4 +1,4 @@
-/* --- Midnight Slate Premium Theme --- */
+/* --- Midnight Slate Theme --- */
 :root {
     --bg: #0f172a; 
     --card: #1e293b; 
@@ -20,11 +20,10 @@ body {
     color: var(--dark); 
     line-height: 1.6;
     overflow-x: hidden;
+    animation: fadeIn 0.6s ease-out;
 }
 
-/* Page Transition */
-body { animation: fadeIn 0.6s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* Navigation */
 nav {
@@ -46,23 +45,23 @@ nav {
 /* Main Container */
 .container { 
     width: 90%; 
-    max-width: 1100px; 
+    max-width: 600px; /* පේළියට වැටෙන නිසා පළල පොඩ්ඩක් අඩු කරා පෙනුම ලස්සන වෙන්න */
     margin: 40px auto; 
 }
 
-/* --- The Grid System (Desktop) --- */
+/* --- Vertical Layout (Desktop & Mobile) --- */
 .grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-    gap: 20px; 
+    display: flex;
+    flex-direction: column; /* මේකෙන් තමයි එක යට එක වැටෙන්නේ */
+    gap: 15px; 
 }
 
-/* --- Cards (City & Batch) --- */
+/* --- Cards --- */
 .card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 30px;
+    border-radius: 16px;
+    padding: 25px;
     text-align: center;
     transition: 0.3s ease;
     text-decoration: none;
@@ -72,11 +71,11 @@ nav {
 
 .card:hover { 
     border-color: var(--accent); 
-    transform: translateY(-5px);
+    transform: scale(1.02);
     box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
 
-.card h3 { font-size: 1.4rem; margin-top: 5px; }
+.card h3 { font-size: 1.3rem; }
 
 /* Buttons */
 .btn {
@@ -91,34 +90,12 @@ nav {
     display: inline-block;
 }
 
-/* --- MOBILE RESPONSIVE FIXES (මෙතන තමයි වැඩේ වෙන්නේ) --- */
+/* Result Styles */
+.rank-box { font-size: 5rem; font-weight: 900; color: var(--accent); text-align: center; margin: 10px 0; }
+
+/* Mobile Responsive */
 @media (max-width: 768px) {
     nav { padding: 15px 5%; }
-
-    .container {
-        width: 92%;
-        margin: 20px auto;
-    }
-
-    /* මෙන්න මේකෙන් තමයි Cards ටික එක යට එක වැටෙන්න හදන්නේ */
-    .grid {
-        grid-template-columns: 1fr; /* Columns එකක් විතරක් පෙන්වන්න */
-        gap: 15px;
-    }
-
-    .card {
-        padding: 20px; /* Mobile එකට ගැලපෙන්න padding අඩු කරා */
-    }
-
-    h1 { font-size: 2.2rem; text-align: center; }
-    h2 { font-size: 1.8rem; text-align: center; }
-    
-    /* Hero Section එක මැදට කරන්න */
-    section { text-align: center; }
+    .container { width: 92%; }
+    .rank-box { font-size: 4rem; }
 }
-
-/* Result Page Styles */
-.rank-box { font-size: 5rem; font-weight: 900; color: var(--accent); text-align: center; }
-.result-tabs { display: flex; gap: 10px; margin: 20px 0; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 10px; }
-.tab { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-dim); cursor: pointer; font-weight: bold; }
-.tab.active { background: var(--accent); color: var(--bg); border-radius: 8px; }
