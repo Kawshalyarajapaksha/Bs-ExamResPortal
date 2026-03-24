@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results | BS Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">🎓 BS <span>PORTAL</span></a>
+        <a href="index.html" style="color:var(--accent); text-decoration:none; font-weight:bold;">Home</a>
+    </nav>
+
+    <div class="container">
+        <div class="card" style="padding: 12px; display: flex; gap: 10px; background: rgba(255,255,255,0.05);">
+            <input type="text" id="indexIn" placeholder="Student Index Number" style="flex:1; background:none; border:none; outline:none; color:white; padding:10px;">
+            <button onclick="searchResult()" class="btn">Search</button>
+        </div>
+
+        <div id="loader" style="display:none; text-align:center; margin: 40px;">
+            <div class="btn" style="background:none; border: 3px solid var(--accent); border-radius:50%; width:40px; height:40px; border-top-color:transparent; animation: spin 1s linear infinite;"></div>
+        </div>
+
+        <div id="resultContent" style="display: none;">
+            <div class="card" style="text-align: center;">
+                <p style="color: var(--text-dim); font-weight: bold;">ISLAND RANK</p>
+                <div class="rank-box">#04</div>
+                <h2 id="stuName">Sachintha Alahakoon</h2>
+            </div>
+
+            <div class="result-tabs">
+                <button class="tab active" onclick="switchExams('unit', this)">Unit Tests</button>
+                <button class="tab" onclick="switchExams('mega', this)">Mega Exams</button>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3 style="margin-bottom:20px; color:var(--accent);">Score History</h3>
+                    <div id="marksList"></div>
+                </div>
+                <div class="chart-box">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart and logic as before, just matches new CSS
+        let chart;
+        const data = {
+            unit: [{n: "Unit 01", m: 85}, {n: "Unit 02", m: 78}],
+            mega: [{n: "Mega 01", m: 92}, {n: "Mega 02", m: 88}]
+        };
+
+        function searchResult() {
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('resultContent').style.display = 'none';
+            setTimeout(() => {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('resultContent').style.display = 'block';
+                switchExams('unit', document.querySelector('.tab'));
+            }, 800);
+        }
+
+        function switchExams(type, btn) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            const list = document.getElementById('marksList');
+            list.innerHTML = data[type].map(i => `
+                <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border);">
+                    <span>${i.n}</span>
+                    <span style="font-weight:bold; color:var(--accent); font-size:1.1rem;">${i.m}</span>
+                </div>
+            `).join('');
+            updateChart(data[type]);
+        }
+
+        function updateChart(cData) {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            if(chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: cData.map(d => d.n),
+                    datasets: [{
+                        label: 'Progress',
+                        data: cData.map(d => d.m),
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

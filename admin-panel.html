@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Results Entry</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="logo">🎓 BS <span>PORTAL</span></a>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <a href="index.html" style="color:var(--text-dim); text-decoration:none; font-size: 0.9rem;">View Site</a>
+            <a href="admin-login.html" class="btn" style="padding: 8px 15px; font-size: 0.8rem; background: #ef4444; color: white;">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header style="margin-bottom: 40px;">
+            <h1 style="font-size: 2rem;">Student <span style="color:var(--accent)">Results Manager</span></h1>
+            <p style="color: var(--text-dim);">Add or update exam marks for the 2026 Batch.</p>
+        </header>
+
+        <div class="grid" style="grid-template-columns: 1fr 2fr;">
+            <div class="card">
+                <h3 style="margin-bottom: 25px; color: var(--accent);">Enter New Marks</h3>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div>
+                        <label style="font-size: 0.8rem; color: var(--text-dim); display: block; margin-bottom: 5px;">Index Number</label>
+                        <input type="text" id="stuIndex" placeholder="e.g. BS/26/001" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white; outline: none;">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.8rem; color: var(--text-dim); display: block; margin-bottom: 5px;">Exam Type</label>
+                        <select id="examType" style="width: 100%; background: #1e293b; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white; outline: none;">
+                            <option value="Unit Test">Unit Test</option>
+                            <option value="Mega Exam">Mega Exam</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 0.8rem; color: var(--text-dim); display: block; margin-bottom: 5px;">Exam Name/No</label>
+                        <input type="text" id="examName" placeholder="e.g. Unit 05" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white; outline: none;">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.8rem; color: var(--text-dim); display: block; margin-bottom: 5px;">Marks (0-100)</label>
+                        <input type="number" id="stuMarks" placeholder="85" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white; outline: none;">
+                    </div>
+                    <button onclick="addResult()" class="btn" style="margin-top: 10px; width: 100%;">SAVE RESULT</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom: 25px;">Recent Submissions</h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border); color: var(--text-dim); font-size: 0.85rem;">
+                                <th style="padding: 10px;">Index</th>
+                                <th style="padding: 10px;">Exam</th>
+                                <th style="padding: 10px;">Marks</th>
+                                <th style="padding: 10px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody">
+                            </tbody>
+                    </table>
+                    <div id="noData" style="text-align: center; padding: 40px; color: var(--text-dim);">
+                        No results entered yet.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addResult() {
+            const index = document.getElementById('stuIndex').value;
+            const type = document.getElementById('examType').value;
+            const name = document.getElementById('examName').value;
+            const marks = document.getElementById('stuMarks').value;
+
+            if(!index || !name || !marks) {
+                alert("Please fill all fields!");
+                return;
+            }
+
+            // UI එකට data add කිරීම
+            const tableBody = document.getElementById('adminTableBody');
+            const noData = document.getElementById('noData');
+            noData.style.display = 'none';
+
+            const row = document.createElement('tr');
+            row.style.borderBottom = "1px solid var(--border)";
+            row.innerHTML = `
+                <td style="padding: 15px;">${index}</td>
+                <td style="padding: 15px;"><span style="font-size:0.7rem; background:rgba(245, 158, 11, 0.1); color:var(--accent); padding:2px 8px; border-radius:5px; margin-right:5px;">${type}</span> ${name}</td>
+                <td style="padding: 15px; font-weight:bold;">${marks}</td>
+                <td style="padding: 15px;"><button onclick="this.parentElement.parentElement.remove()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:0.8rem;">Delete</button></td>
+            `;
+
+            tableBody.prepend(row);
+
+            // Fields clear කිරීම
+            document.getElementById('stuIndex').value = '';
+            document.getElementById('examName').value = '';
+            document.getElementById('stuMarks').value = '';
+            
+            // සාර්ථක බව පෙන්වන්න පොඩි effect එකක්
+            alert("Result saved successfully for " + index);
+        }
+    </script>
+</body>
+</html>
