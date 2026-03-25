@@ -21,43 +21,30 @@
         <a href="batch.html" class="card"><h3>Matale</h3></a>
         </div>
     </div>
-    <script>
-    // Browser history eka clear karala exit wenna hadana hati
-    (function (global) {
-        if (typeof (global) === "undefined") {
-            throw new Error("window is undefined");
-        }
+ <script>
+    // Page eka load weddi history eka 'Replace' karanawa parana ekata yanna bari wenna
+    window.history.replaceState(null, document.title, location.href);
 
-        var _hash = "!";
-        var noBackPlease = function () {
-            global.location.href += "#";
-
-            // Hash eka wenas wenna hadala back button eka block karanawa
-            global.setTimeout(function () {
-                global.location.href += "!";
-            }, 50);
-        };
-
-        global.onhashchange = function () {
-            if (global.location.hash !== _hash) {
-                global.location.hash = _hash;
-            }
-        };
-
-        global.onload = function () {
-            noBackPlease();
-
-            // Screen eka touch kalama ho click kalama back history eka block wenna meka udaw wenawa
-            document.body.onmousedown = function () {
-                noBackPlease();
-            };
-        };
-    })(window);
-
-    // Meka dammahama user back button eka ebuwama page eken exit wenna balanawa
     window.addEventListener('popstate', function (event) {
+        // User back button eka ebuwama aye me page ekatama 'Push' karanawa
+        // Ethakota parana page ekata yanne nathuwa exit wenna balanawa
         window.history.pushState(null, document.title, location.href);
     });
-</script>
+
+    // Link ekak click kalama lassanata fade-out wenna oni nam meka udaw wenawa
+    document.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (this.hostname === window.location.hostname) {
+                e.preventDefault();
+                let target = this.href;
+                document.body.style.opacity = '0';
+                document.body.style.transition = 'opacity 0.4s';
+                setTimeout(() => {
+                    window.location.href = target;
+                }, 400);
+            }
+        });
+    });
+</script>   
 </body>
 </html>
