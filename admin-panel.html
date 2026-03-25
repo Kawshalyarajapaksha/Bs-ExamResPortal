@@ -210,17 +210,43 @@ function addResult() {
     document.getElementById('examName').value = '';
     document.getElementById('stuMarks').value = '';
 }
-// --- Universal Popup Function ---
+
 function showPopup(title, text, icon, type = 'info', action = null) {
     const modal = document.getElementById('customModal');
     document.getElementById('modalTitle').innerText = title;
-    document.getElementById('modalText').innerText = text;
+    const textEl = document.getElementById('modalText');
+    textEl.innerText = text;
     document.getElementById('modalIcon').innerText = icon;
     
     const btnGroup = document.getElementById('modalButtons');
     btnGroup.innerHTML = ''; 
 
-    if (type === 'confirm') {
+    // Password ekak illana type ekak nam:
+    if (type === 'password-prompt') {
+        const input = document.createElement('input');
+        input.type = 'password';
+        input.placeholder = 'Enter Admin Password';
+        input.className = 'modal-input';
+        input.id = 'confirmPassInput';
+        textEl.appendChild(document.createElement('br'));
+        textEl.appendChild(document.createElement('br'));
+        textEl.appendChild(input);
+
+        const confirmBtn = { 
+            label: "CONFIRM & PROCEED", 
+            class: "btn-ok", 
+            act: () => {
+                const enteredPass = document.getElementById('confirmPassInput').value;
+                verifyAndExecute(enteredPass, action); // Password eka check karana thana
+            } 
+        };
+        createBtn(confirmBtn, btnGroup, modal);
+        
+        const cancelBtn = { label: "CANCEL", class: "btn-cancel", act: () => {} };
+        createBtn(cancelBtn, btnGroup, modal);
+    } 
+    // Anith types (confirm/alert) kalin widiyatama thiyenna...
+    else if (type === 'confirm') {
         const buttons = [
             { label: "EDIT DATA", class: "btn-edit", act: () => editEntry(action) },
             { label: "REMOVE", class: "btn-remove", act: () => removeEntry(action) },
@@ -231,7 +257,34 @@ function showPopup(title, text, icon, type = 'info', action = null) {
         const okBtn = { label: "OK", class: "btn-ok", act: () => {} };
         createBtn(okBtn, btnGroup, modal);
     }
+
     modal.classList.add('active');
+}
+
+async function verifyAndExecute(enteredPass, taskType) {
+    // Database eken 'admin' kiyana userge password eka gannawa
+    const { data, error } = await window.supabaseClient
+        .from('admins')
+        .select('password')
+        .eq('username', 'admin') 
+        .single();
+
+    if (error) {
+        showPopup("Error", "Could not connect to database!", "❌", "alert");
+        return;
+    }
+
+    // Enter karapu password eka database eke password eka ekka match wenawa nam
+    if (data && enteredPass === data.password) {
+        if (taskType === 'UPLOAD') {
+            finalUploadProcess(); 
+        } else if (taskType === 'RANKS') {
+            finalRankProcess(); 
+        }
+    } else {
+        // Password eka waradi nam
+        showPopup("Access Denied", "Incorrect Admin Password!", "❌", "alert");
+    }
 }
 
 function createBtn(btn, container, modal) {
@@ -344,11 +397,20 @@ function removeEntry(index) {
     showPopup("Removed", "The record has been deleted from the list.", "🗑️", "alert");
 }
 
-async function uploadToDatabase() {
+function uploadToDatabase() {
+    // මේකෙන් කරන්නේ අර ලස්සන popup එක පෙන්වන එක විතරයි.
+    // "UPLOAD" කියන වචනය අපි යවන්නේ පස්සේ පාවිච්චියට (ID එකක් වගේ).
+    showPopup("Security Check", "Please enter password to upload data.", "🔒", "password-prompt", "UPLOAD");
+}
+// මේක තමයි ඇත්තටම upload කරන කොටස
+async function finalUploadProcess() {
     const btn = document.getElementById('dbSubmitBtn');
+    
+    // Upload වෙන්න පටන් ගන්න බව පෙන්වන්න
     btn.innerText = "⏳ UPLOADING...";
     btn.disabled = true;
 
+    // Supabase එකට data යවන කොටස (කලින් තිබ්බ code එකමයි)
     const { error } = await window.supabaseClient.from('results').insert(tempResults);
 
     if (error) {
@@ -357,26 +419,31 @@ async function uploadToDatabase() {
         btn.disabled = false;
     } else {
         showPopup("Success!", tempResults.length + " results saved to database.", "✅", "alert");
-        tempResults = [];
-        renderTable();
+        tempResults = []; // List එක clear කරනවා
+        renderTable();    // Table එක refresh කරනවා
+        btn.innerText = "🚀 UPLOAD TO DATABASE";
+        btn.disabled = false;
     }
 }
 
-        async function recalculateAllRanks() {
+function recalculateAllRanks() {
+    // Kelinma rpc eka run karanne nathuwa password prompt eka pennanawa
+    showPopup("Security Check", "Enter password to recalculate all ranks.", "📊", "password-prompt", "RANKS");
+}
+
+// Attha calculation eka wenne methana
+async function finalRankProcess() {
     const btn = document.getElementById('rankBtn');
     btn.innerText = "⏳ PROCESSING...";
     btn.disabled = true;
 
     try {
         const { error } = await window.supabaseClient.rpc('calculate_ranks');
-        if (error) throw error;
-        
-        // සාර්ථක වුනාම එන popup එක
+    if (error) throw error;
         showPopup("Success!", "Ranks updated based on Batch and Exam.", "📊", "alert");
-    } catch (err) {
-        // Error එකක් වුනාම එන popup එක
+        } catch (err) {
         showPopup("Error!", err.message, "❌", "alert");
-    } finally {
+        } finally {
         btn.innerText = "🔄 CALCULATE ALL RANKS";
         btn.disabled = false;
     }
