@@ -305,10 +305,18 @@ td {
     background: #fcd34d !important; /* Slightly brighter on hover */
     transform: scale(1.02);
 }
-/* Mobile view එකේදී වචන අතර පරතරය (Line Height) අඩු කරන්න */
+/* --- Global Mobile Text Spacing Fix --- */
 @media (max-width: 768px) {
-    h1 {
-        line-height: 1.1 !important; /* මේ අගය වෙනස් කරලා පරතරය කැමති ගාණට හදාගන්න පුළුවන් */
-        margin-bottom: 20px;
+    /* Header labels සහ ඔක්කොම ලොකු අකුරු වල පරතරය අඩු කිරීමට */
+    h1, h2, h3, .container h1, .container h1 span {
+        line-height: 0.9 !important; /* පේළි අතර ඉඩ සම්පූර්ණයෙන්ම අඩු කළා */
+        margin-top: 5px !important;
+        margin-bottom: 10px !important;
+        display: inline-block !important; /* Inline-block දැම්මම පරතරය පාලනය ලේසියි */
+    }
+
+    /* "Select Your Location" වගේ ඒවයේ වචන දෙක ලඟට ගැනීමට */
+    .container header, .container {
+        padding-top: 10px !important;
     }
 }
