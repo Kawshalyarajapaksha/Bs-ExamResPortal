@@ -6,7 +6,7 @@
     --text: #ffffff;            /* Pure White Text */
     --text-dim: #94a3b8;
     --border: rgba(255, 255, 255, 0.08);
-    --glass: rgba(252, 66, 67, 0.1); /* Subtle Red Glass effect */
+    --glass: rgba(209, 66, 252, 0.1); /* Subtle Red Glass effect */
 }
 
 /* --- Reset --- */
@@ -31,9 +31,26 @@ body {
 
 /* --- Navigation --- */
 nav {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 20px 8%; border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    /* පසුබිම 90% ක් තද වර්ණයෙන් (Opacity 0.9) */
+    background: rgba(2, 6, 23, 0.94); 
+    
+    /* කලින් තිබ්බ gradient එකත් එක්කම glass effect එක දීම */
+    background-image: radial-gradient(circle at top right, rgba(255, 77, 77, 0.15), rgba(2, 6, 23, 0.9));
+
+    /* යට තියෙන දේවල් බොඳ කරන ප්‍රමාණය (Blur effect) */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    /* වෙන් කර හඳුනා ගැනීමට යටින් සියුම් ඉරක් */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .logo { font-weight: 800; font-size: 1.4rem; color: white; }
@@ -49,20 +66,34 @@ nav {
     display: flex; flex-direction: column; gap: 15px; margin-top: 30px;
 }
 
-/* --- Premium Card (Glass Look) --- */
+/* --- High-End Glassmorphism & Blur --- */
+
+/* Meka thamai page eke content blur karana main class eka */
+.content-wrapper {
+    transition: filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+}
+
+.content-blur {
+    filter: blur(5px) brightness(0.6) !important; /* Blur eka lassanata penna */
+}
+
 .card {
     background: var(--card);
     border: 1px solid var(--border);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border-radius: 20px; padding: 25px;
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    display: block; cursor: pointer;
+    border-radius: 16px;
+    padding: 25px;
+    text-align: center;
+    transition: 0.3s ease;
+    text-decoration: none;
+    display: block;
+    color: var(--dark);
 }
 
-.card:hover {
-    border-color: var(--accent);
-    transform: translateY(-5px);
-    background: rgba(255, 255, 255, 0.08);
+.card:hover { 
+    border-color: var(--accent); 
+    transform: scale(1.02);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
 
 .card h3 { font-size: 1.5rem; color: white; margin: 5px 0; }

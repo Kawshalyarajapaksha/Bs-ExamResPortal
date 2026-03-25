@@ -50,11 +50,15 @@
     </style>
 </head>
 <body>
-    <nav>
+    <nav class="nav-container">
+        
         <a href="index.html" class="logo">BS EXAM <span>UNIT</span></a>
-        <a href="batch.html" class="nav-btn">Back</a>
+        <a href="batch.html" class="nav-btn" style="color:var(--accent); text-decoration:none;font-weight:bold;">Back</a>
     </nav>
-
+    <div class="content-wrapper">
+        <div class="container">
+            </div>
+    </div>
     <div class="container" style="max-width: 800px;">
         <div style="text-align: center; margin-bottom: 30px;">
             <h1 style="font-size: 2.2rem; margin-bottom: 5px;">Exam Results</h1>
@@ -202,6 +206,36 @@
             }
         });
     });
+</script>
+<script>
+    const navBar = document.querySelector('.nav-container'); // Oyage nav bar eke class eka
+    const mainContent = document.querySelector('.content-wrapper');
+
+    if(navBar && mainContent) {
+        // Nav bar eka hover weddi blur wenna
+        navBar.addEventListener('mouseenter', () => {
+            mainContent.classList.add('content-blur');
+        });
+
+        // Nav bar eken mouse eka ain weddi blur eka nathi wenna
+        navBar.addEventListener('mouseleave', () => {
+            mainContent.classList.remove('content-blur');
+        });
+    }
+    
+</script>
+<script>
+    const nav = document.querySelector('.nav-container');
+    const content = document.querySelector('.content-wrapper');
+
+    if(nav && content) {
+        nav.addEventListener('mouseenter', () => {
+            content.classList.add('content-overlay');
+        });
+        nav.addEventListener('mouseleave', () => {
+            content.classList.remove('content-overlay');
+        });
+    }
 </script>
 </body>
 </html>

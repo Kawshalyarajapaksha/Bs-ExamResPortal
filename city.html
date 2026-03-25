@@ -19,6 +19,7 @@
         <a href="batch.html" class="card"><h3>Rambukkana</h3></a>
         <a href="batch.html" class="card"><h3>Kandy</h3></a>
         <a href="batch.html" class="card"><h3>Matale</h3></a>
+        <a href="" class=""><h3></h3></a>
         </div>
     </div>
  <script>
@@ -45,6 +46,22 @@
             }
         });
     });
-</script>   
+</script>
+<script>
+    const navBar = document.querySelector('.nav-container'); // Oyage nav bar eke class eka
+    const mainContent = document.querySelector('.content-wrapper');
+
+    if(navBar && mainContent) {
+        // Nav bar eka hover weddi blur wenna
+        navBar.addEventListener('mouseenter', () => {
+            mainContent.classList.add('content-blur');
+        });
+
+        // Nav bar eken mouse eka ain weddi blur eka nathi wenna
+        navBar.addEventListener('mouseleave', () => {
+            mainContent.classList.remove('content-blur');
+        });
+    }
+</script>
 </body>
 </html>
