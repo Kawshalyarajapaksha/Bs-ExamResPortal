@@ -5,6 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | Results Entry</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <style>
+        .action-buttons {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        @media (min-width: 769px) {
+            .action-buttons {
+                flex-direction: row;
+                justify-content: flex-end;
+            }
+            .action-buttons .btn {
+                width: auto !important;
+            }
+        }
+        /* Remove button එකේ style එක */
+        .remove-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 5px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .remove-btn:hover {
+            background: #ef4444;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <nav>
@@ -18,95 +53,286 @@
     <div class="container">
         <header style="margin-bottom: 40px;">
             <h1 style="font-size: 2rem;">Student <span style="color:var(--accent)">Results Manager</span></h1>
-            <p style="color: var(--text-dim);">Add or update exam marks for the 2026 Batch.</p>
+            <p style="color: var(--text-dim);">Add marks to the list and upload to database.</p>
         </header>
 
         <div class="grid" style="grid-template-columns: 1fr 2fr;">
             <div class="card">
                 <h3 style="margin-bottom: 25px; color: var(--accent);">Enter New Marks</h3>
+                
                 <div style="display: flex; flex-direction: column; gap: 15px;">
-                    <div>
-                        <label style="font-size: 0.8rem; color: var(--text-dim); display: block; margin-bottom: 5px;">Index Number</label>
-                        <input type="text" id="stuIndex" placeholder="e.g. BS/26/001" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white; outline: none;">
-                    </div>
-                    <div>
-                        <label style="font-size: 0.8rem; color: var(--text-dim); display: block; margin-bottom: 5px;">Exam Type</label>
-                        <select id="examType" style="width: 100%; background: #1e293b; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white; outline: none;">
-                            <option value="Unit Test">Unit Test</option>
-                            <option value="Mega Exam">Mega Exam</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="font-size: 0.8rem; color: var(--text-dim); display: block; margin-bottom: 5px;">Exam Name/No</label>
-                        <input type="text" id="examName" placeholder="e.g. Unit 05" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white; outline: none;">
-                    </div>
-                    <div>
-                        <label style="font-size: 0.8rem; color: var(--text-dim); display: block; margin-bottom: 5px;">Marks (0-100)</label>
-                        <input type="number" id="stuMarks" placeholder="85" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white; outline: none;">
-                    </div>
-                    <button onclick="addResult()" class="btn" style="margin-top: 10px; width: 100%;">SAVE RESULT</button>
+                    <input type="text" id="stuIndex" placeholder="Index (e.g. BS/26/001)">
+                    <select id="stuCity" style="width: 100%; background: #1e293b; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white;">
+                        <option value="Kegalle">Kegalle</option>
+                        <option value="Rambukkana">Rambukkana</option>
+                        <option value="Kandy">Kandy</option>
+                        <option value="Matale">Matale</option>
+                    </select>
+                    <select id="stuBatch" style="width: 100%; background: #1e293b; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white;">
+                        <option value="2026">Batch 2026</option>
+                        <option value="2027">Batch 2027</option>
+                        <option value="2028">Batch 2028</option>
+                    </select>
+                    <select id="examType" style="width: 100%; background: #1e293b; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white;">
+                        <option value="Unit Test">Unit Test</option>
+                        <option value="Mega Exam">Mega Exam</option>
+                    </select>
+                    <input type="text" id="examName" placeholder="Exam Name (e.g. Unit 05)">
+                    <input type="number" id="stuMarks" placeholder="Marks (0-100)">
+                    <button onclick="addResult()" class="btn" style="margin-top: 10px; width: 100%; padding: 15px;">ADD TO LIST</button>
                 </div>
             </div>
 
             <div class="card">
-                <h3 style="margin-bottom: 25px;">Recent Submissions</h3>
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                        <thead>
-                            <tr style="border-bottom: 2px solid var(--border); color: var(--text-dim); font-size: 0.85rem;">
-                                <th style="padding: 10px;">Index</th>
-                                <th style="padding: 10px;">Exam</th>
-                                <th style="padding: 10px;">Marks</th>
-                                <th style="padding: 10px;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminTableBody">
-                            </tbody>
-                    </table>
-                    <div id="noData" style="text-align: center; padding: 40px; color: var(--text-dim);">
-                        No results entered yet.
-                    </div>
+                <h3 style="margin-bottom: 25px;">Review Before Upload</h3>
+               <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--border); color: var(--text-dim); font-size: 0.85rem;">
+                <th style="padding: 10px;">Index</th>
+                <th style="padding: 10px;">City</th>
+                <th style="padding: 10px;">Batch</th>
+                <th style="padding: 10px;">Exam Details</th>
+                <th style="padding: 10px;">Marks</th>
+                <th style="padding: 10px; text-align: center;">Action</th>
+            </tr>
+        </thead>
+        <tbody id="adminTableBody"></tbody>
+    </table>
+    <div id="noData" style="text-align: center; padding: 40px; color: var(--text-dim);">
+        No results added to the list yet.
+    </div>
+</div>
+                    
+                    <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 12px;">
+    <button id="dbSubmitBtn" onclick="uploadToDatabase()" class="btn" 
+        style="background: #10b981; color: white; display: none; width: 100%; padding: 15px;">
+        🚀 SEND ALL TO DATABASE
+    </button>
+    
+    <button id="rankBtn" onclick="recalculateAllRanks()" class="btn" 
+        style="background: #6366f1; color: white; width: 100%; padding: 15px;">
+        🔄 CALCULATE ALL RANKS
+    </button>
+</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        function addResult() {
-            const index = document.getElementById('stuIndex').value;
-            const type = document.getElementById('examType').value;
-            const name = document.getElementById('examName').value;
-            const marks = document.getElementById('stuMarks').value;
+        let tempResults = [];
 
-            if(!index || !name || !marks) {
-                alert("Please fill all fields!");
-                return;
-            }
+    // Me functions deka kalin thibba ekata replace karanna
+function addResult() {
+    const index = document.getElementById('stuIndex').value.trim();
+    const city = document.getElementById('stuCity').value;
+    const batch = document.getElementById('stuBatch').value;
+    const type = document.getElementById('examType').value;
+    const name = document.getElementById('examName').value.trim();
+    const marks = document.getElementById('stuMarks').value;
 
-            // UI එකට data add කිරීම
-            const tableBody = document.getElementById('adminTableBody');
-            const noData = document.getElementById('noData');
-            noData.style.display = 'none';
+    if(!index || !name || !marks) {
+        showPopup("Missing Info", "Please fill all fields before adding!", "⚠️", "alert");
+        return;
+    }
 
-            const row = document.createElement('tr');
-            row.style.borderBottom = "1px solid var(--border)";
-            row.innerHTML = `
-                <td style="padding: 15px;">${index}</td>
-                <td style="padding: 15px;"><span style="font-size:0.7rem; background:rgba(245, 158, 11, 0.1); color:var(--accent); padding:2px 8px; border-radius:5px; margin-right:5px;">${type}</span> ${name}</td>
-                <td style="padding: 15px; font-weight:bold;">${marks}</td>
-                <td style="padding: 15px;"><button onclick="this.parentElement.parentElement.remove()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:0.8rem;">Delete</button></td>
-            `;
+    const newEntry = { 
+        student_index: index, 
+        city: city, 
+        batch: batch,
+        exam_type: type, 
+        exam_number: name, 
+        marks: parseInt(marks) 
+    };
+    tempResults.push(newEntry);
+    renderTable();
 
-            tableBody.prepend(row);
+    document.getElementById('stuIndex').value = '';
+    document.getElementById('examName').value = '';
+    document.getElementById('stuMarks').value = '';
+}
+// --- Universal Popup Function ---
+function showPopup(title, text, icon, type = 'info', action = null) {
+    const modal = document.getElementById('customModal');
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('modalText').innerText = text;
+    document.getElementById('modalIcon').innerText = icon;
+    
+    const btnGroup = document.getElementById('modalButtons');
+    btnGroup.innerHTML = ''; 
 
-            // Fields clear කිරීම
-            document.getElementById('stuIndex').value = '';
-            document.getElementById('examName').value = '';
-            document.getElementById('stuMarks').value = '';
-            
-            // සාර්ථක බව පෙන්වන්න පොඩි effect එකක්
-            alert("Result saved successfully for " + index);
-        }
+    if (type === 'confirm') {
+        const buttons = [
+            { label: "EDIT DATA", class: "btn-edit", act: () => editEntry(action) },
+            { label: "REMOVE", class: "btn-remove", act: () => removeEntry(action) },
+            { label: "CANCEL", class: "btn-cancel", act: () => {} }
+        ];
+        buttons.forEach(btn => createBtn(btn, btnGroup, modal));
+    } else {
+        const okBtn = { label: "OK", class: "btn-ok", act: () => {} };
+        createBtn(okBtn, btnGroup, modal);
+    }
+    modal.classList.add('active');
+}
+
+function createBtn(btn, container, modal) {
+    const b = document.createElement('button');
+    b.innerText = btn.label;
+    b.className = `m-btn ${btn.class}`;
+    b.onclick = () => {
+        modal.classList.remove('active');
+        btn.act();
+    };
+    container.appendChild(b);
+}
+        // Table එක UI එකේ පෙන්වන function එක
+function renderTable() {
+    const tableBody = document.getElementById('adminTableBody');
+    const noData = document.getElementById('noData');
+    const dbBtn = document.getElementById('dbSubmitBtn');
+
+    tableBody.innerHTML = '';
+
+    if (tempResults.length === 0) {
+        noData.style.display = 'block';
+        dbBtn.style.display = 'none';
+        return;
+    }
+
+    noData.style.display = 'none';
+    dbBtn.style.display = 'inline-block';
+
+    tempResults.forEach((entry, index) => {
+        const row = document.createElement('tr');
+        row.style.borderBottom = "1px solid var(--border)";
+        row.style.fontSize = "0.85rem";
+        
+        row.innerHTML = `
+            <td style="padding: 12px 10px;">${entry.student_index}</td>
+            <td style="padding: 12px 10px;">
+                <span style="background:rgba(99, 102, 241, 0.1); color:#818cf8; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold;">
+                    ${entry.city}
+                </span>
+            </td>
+            <td style="padding: 12px 10px;">${entry.batch}</td>
+            <td style="padding: 12px 10px;">
+                <span style="font-size:0.7rem; background:rgba(245, 158, 11, 0.1); color:var(--accent); padding:2px 6px; border-radius:4px; font-weight:bold;">
+                    ${entry.exam_type}
+                </span><br>
+                <small style="color:var(--text-dim)">${entry.exam_number}</small>
+            </td>
+            <td style="padding: 12px 10px; font-weight:bold; color:var(--accent);">${entry.marks}</td>
+            <td style="padding: 12px 10px; text-align: center;">
+                <button onclick="handleAction(${index})" class="remove-btn" 
+                    style="background:rgba(239, 68, 68, 0.1); color:#ef4444; border:1px solid rgba(239, 68, 68, 0.2); padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.75rem;">
+                    Edit/Remove
+                </button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+function showModal(title, text, icon, buttons) {
+    const modal = document.getElementById('customModal');
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('modalText').innerText = text;
+    document.getElementById('modalIcon').innerText = icon;
+    
+    const btnGroup = document.getElementById('modalButtons');
+    btnGroup.innerHTML = ''; // කලින් තිබ්බ buttons අයින් කරන්න
+
+    buttons.forEach(btn => {
+        const b = document.createElement('button');
+        b.innerText = btn.label;
+        b.className = `m-btn ${btn.class}`;
+        b.onclick = () => {
+            modal.classList.remove('active');
+            btn.action();
+        };
+        btnGroup.appendChild(b);
+    });
+
+    modal.classList.add('active');
+}
+
+// පරණ handleAction එක වෙනුවට මේක පාවිච්චි කරන්න
+function handleAction(index) {
+    showPopup("Manage Entry", "What do you want to do with this record?", "⚙️", "confirm", index);
+}
+// දත්ත Edit කරන function එක
+function editEntry(index) {
+    const entry = tempResults[index];
+
+    // Table එකේ තියෙන values ටික ආපහු input fields වලට දානවා
+    document.getElementById('stuIndex').value = entry.student_index;
+    document.getElementById('stuCity').value = entry.city;
+    document.getElementById('stuBatch').value = entry.batch;
+    document.getElementById('examType').value = entry.exam_type;
+    document.getElementById('examName').value = entry.exam_number;
+    document.getElementById('stuMarks').value = entry.marks;
+
+    // පරණ entry එක array එකෙන් අයින් කරනවා (අලුතෙන් add වෙන නිසා)
+    tempResults.splice(index, 1);
+    renderTable();
+
+    // User ට දැනුම් දීමක් කරනවා
+    showPopup("Editing...", "Values have been moved back to input fields.", "📝", "alert");
+}
+
+function removeEntry(index) {
+    tempResults.splice(index, 1);
+    renderTable();
+    showPopup("Removed", "The record has been deleted from the list.", "🗑️", "alert");
+}
+
+async function uploadToDatabase() {
+    const btn = document.getElementById('dbSubmitBtn');
+    btn.innerText = "⏳ UPLOADING...";
+    btn.disabled = true;
+
+    const { error } = await window.supabaseClient.from('results').insert(tempResults);
+
+    if (error) {
+        showPopup("Upload Failed", error.message, "❌", "alert");
+        btn.innerText = "RETRY SENDING";
+        btn.disabled = false;
+    } else {
+        showPopup("Success!", tempResults.length + " results saved to database.", "✅", "alert");
+        tempResults = [];
+        renderTable();
+    }
+}
+
+        async function recalculateAllRanks() {
+    const btn = document.getElementById('rankBtn');
+    btn.innerText = "⏳ PROCESSING...";
+    btn.disabled = true;
+
+    try {
+        const { error } = await window.supabaseClient.rpc('calculate_ranks');
+        if (error) throw error;
+        
+        // සාර්ථක වුනාම එන popup එක
+        showPopup("Success!", "Ranks updated based on Batch and Exam.", "📊", "alert");
+    } catch (err) {
+        // Error එකක් වුනාම එන popup එක
+        showPopup("Error!", err.message, "❌", "alert");
+    } finally {
+        btn.innerText = "🔄 CALCULATE ALL RANKS";
+        btn.disabled = false;
+    }
+}
     </script>
+    <div id="customModal" class="modal-overlay">
+    <div class="modal-card">
+        <div id="modalIcon" style="font-size: 3rem; margin-bottom: 15px;">❓</div>
+        <h3 id="modalTitle" style="margin-bottom: 10px; color: var(--accent);">Confirm Action</h3>
+        <p id="modalText" style="color: var(--text-dim); margin-bottom: 25px;">What would you like to do with this entry?</p>
+        
+        <div id="modalButtons" class="modal-btn-group">
+            </div>
+    </div>
+    </div>
 </body>
 </html>
