@@ -18,7 +18,7 @@
 a { text-decoration: none; color: inherit; }
 
 body { 
-    background: radial-gradient(circle at top right, #1e293b, #020617);
+    background: radial-gradient(circle at top right, #fc4243, #020617);
     color: var(--text);
     min-height: 100vh;
     animation: fadeIn 0.6s ease-out;
@@ -156,16 +156,3 @@ a {
 .btn-edit { background: var(--accent); color: white; }
 .btn-remove { background: #ef4444; color: white; }
 .btn-cancel { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
-.modal-input {
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 20px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    color: white;
-    text-align: center;
-    font-size: 1.1rem;
-    outline: none;
-}
-.modal-input:focus { border-color: var(--accent); }
