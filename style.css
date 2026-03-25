@@ -305,3 +305,10 @@ td {
     background: #fcd34d !important; /* Slightly brighter on hover */
     transform: scale(1.02);
 }
+/* Mobile view එකේදී වචන අතර පරතරය (Line Height) අඩු කරන්න */
+@media (max-width: 768px) {
+    h1 {
+        line-height: 1.1 !important; /* මේ අගය වෙනස් කරලා පරතරය කැමති ගාණට හදාගන්න පුළුවන් */
+        margin-bottom: 20px;
+    }
+}
