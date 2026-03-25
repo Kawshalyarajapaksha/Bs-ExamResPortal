@@ -100,7 +100,7 @@
 </head>
 <body>
     <nav>
-        <a href="index.html" class="logo">🎓 BS <span>PORTAL</span></a>
+        <a href="index.html" class="logo">BS EXAM <span>UNIT</span></a>
         <div style="display: flex; gap: 20px; align-items: center;">
             <a href="index.html" style="color:var(--text-dim); text-decoration:none; font-size: 0.9rem;">View Site</a>
             <a href="admin-login.html" class="btn" style="padding: 8px 15px; font-size: 0.8rem; background: #ef4444; color: white;">Logout</a>
@@ -119,18 +119,18 @@
                 
                 <div style="display: flex; flex-direction: column; gap: 15px;">
                     <input type="text" id="stuIndex" placeholder="Index (e.g. BS/26/001)">
-                    <select id="stuCity" style="width: 100%; background: #1e293b; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white;">
+                    <select id="stuCity" style="width: 100%; background: #2d2030; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white;">
                         <option value="Kegalle">Kegalle</option>
                         <option value="Rambukkana">Rambukkana</option>
                         <option value="Kandy">Kandy</option>
                         <option value="Matale">Matale</option>
                     </select>
-                    <select id="stuBatch" style="width: 100%; background: #1e293b; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white;">
+                    <select id="stuBatch" style="width: 100%; background: #2d2030; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white;">
                         <option value="2026">Batch 2026</option>
                         <option value="2027">Batch 2027</option>
                         <option value="2028">Batch 2028</option>
                     </select>
-                    <select id="examType" style="width: 100%; background: #1e293b; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white;">
+                    <select id="examType" style="width: 100%; background: #2d2030; border: 1px solid var(--border); padding: 12px; border-radius: 10px; color: white;">
                         <option value="Unit Test">Unit Test</option>
                         <option value="Mega Exam">Mega Exam</option>
                     </select>
@@ -162,12 +162,12 @@
 </div>
                     
                     <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 12px;">
-    <button id="dbSubmitBtn" onclick="uploadToDatabase()" class="btn" 
+    <button id="dbSubmitBtn" onclick="uploadToDatabase()" class="btn3" 
         style="background: #10b981; color: white; display: none; width: 100%; padding: 15px;">
         🚀 SEND ALL TO DATABASE
     </button>
     
-    <button id="rankBtn" onclick="recalculateAllRanks()" class="btn" 
+    <button id="rankBtn" onclick="recalculateAllRanks()" class="btn2" 
         style="background: #6366f1; color: white; width: 100%; padding: 15px;">
         🔄 CALCULATE ALL RANKS
     </button>

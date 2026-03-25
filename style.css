@@ -1,11 +1,12 @@
-/* --- Master Theme --- */
 :root {
-    --bg: #020617; 
-    --card: rgba(255, 255, 255, 0.05);
-    --accent: #fbbf24; 
-    --text: #f8fafc;
+    --bg: #020617;              /* Deep Dark Background */
+    --card: rgba(255, 255, 255, 0.03);
+    --accent: #fc4243;          /* Main Red Color */
+    --secondary: #fbbf24;       /* Golden Yellow for Highlights */
+    --text: #ffffff;            /* Pure White Text */
     --text-dim: #94a3b8;
-    --border: rgba(255, 255, 255, 0.1);
+    --border: rgba(255, 255, 255, 0.08);
+    --glass: rgba(252, 66, 67, 0.1); /* Subtle Red Glass effect */
 }
 
 /* --- Reset --- */
@@ -18,10 +19,12 @@
 a { text-decoration: none; color: inherit; }
 
 body { 
-    background: radial-gradient(circle at top right, #fc4243, #020617);
+    background: var(--bg);
+    /* Subtle Red glow ekak damma top corner ekata */
+    background-image: radial-gradient(circle at top right, #ff4d4d26, var(--bg));
     color: var(--text);
     min-height: 100vh;
-    animation: fadeIn 0.6s ease-out;
+    line-height: 1.6;
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -66,12 +69,53 @@ nav {
 .card p { color: var(--accent); font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
 
 /* --- Buttons & Inputs --- */
+/* --- Buttons --- */
 .btn {
-    background: var(--accent); color: #020617;
-    padding: 12px 25px; border-radius: 12px; border: none;
-    font-weight: 800; cursor: pointer; display: inline-block;
+    background: var(--accent); 
+    color: white;
+    padding: 12px 28px; border-radius: 14px; border: none;
+    font-weight: 700; cursor: pointer; 
+    display: inline-block;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(252, 66, 67, 0.3);
 }
 
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 3px 12px rgba(252, 66, 67, 0.4);
+    background: #ff5253; /* Slightly brighter red on hover */
+}
+
+.btn2 {
+    background: var(--accent); 
+    color: white;
+    padding: 12px 28px; border-radius: 14px; border: none;
+    font-weight: 700; cursor: pointer; 
+    display: inline-block;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(66, 66, 252, 0.3);
+}
+
+.btn2:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 3px 12px rgba(66, 66, 252, 0.3);
+    background: #527aff; /* Slightly brighter red on hover */
+}
+.btn3 {
+    background: var(--accent); 
+    color: white;
+    padding: 12px 28px; border-radius: 14px; border: none;
+    font-weight: 700; cursor: pointer; 
+    display: inline-block;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(66, 252, 202, 0.3);
+}
+
+.btn3:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 3px 12px rgba(66, 66, 252, 0.3);
+    background: #527aff; /* Slightly brighter red on hover */
+}
 input {
     width: 100%; background: var(--card); border: 1px solid var(--border);
     padding: 15px; border-radius: 12px; color: white; outline: none;
@@ -154,5 +198,110 @@ a {
 }
 
 .btn-edit { background: var(--accent); color: white; }
+.btn-removee { background: #fbbf24; color: white; }
 .btn-remove { background: #ef4444; color: white; }
 .btn-cancel { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
+/* --- Results Page Fix (Copy this to the bottom of style.css) --- */
+
+/* Tabs lassanata yellow wenna */
+.tab {
+    background: rgba(2, 6, 23, 0.4) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.tab.active {
+    background: #fbbf24 !important; /* Yellow for active tab */
+    color: #020617 !important;      /* Dark text */
+    font-weight: 800;
+    box-shadow: 0 8px 20px rgba(251, 191, 36, 0.3);
+}
+
+/* Table Headers සහ Marks yellow wenna */
+/* Table Headers with specific color #94a3b8 */
+th {
+    color: #94a3b8 !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Data tika yellow widiyatama thiyanna */
+td {
+    color: #fbbf24 !important;
+}
+
+/* Graph labels etc. highlight wenna */
+.highlight-text {
+    color: #fbbf24 !important;
+}
+
+/* --- Table Data Text Yellow Fix --- */
+
+/* Table Headers with specific color #94a3b8 */
+th {
+    color: #94a3b8 !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Data tika yellow widiyatama thiyanna */
+td {
+    color: #fbbf24 !important;
+}
+
+/* Table row eka hover karaddi thawa poddak bright wenna */
+tr:hover td {
+    color: #ffffff !important;
+    background: rgba(251, 191, 36, 0.1);
+}
+
+/* Results labels (Batch, Exam name) yellow karanna */
+.result-header h2, .result-header p {
+    color: #fbbf24 !important;
+}
+/* --- Results Table Style Fix ONLY --- */
+
+/* Table headers tika witharak #94a3b8 karanna */
+th {
+    color: #94a3b8 !important;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Table eke thiyena data (Index, Name, Marks) okkoma lassanata yellow karanna */
+td, td * {
+    color: #fbbf24 !important;
+    font-weight: 500;
+}
+
+/* Table eke border eka thawa poddak soft karanna */
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+/* --- Admin Panel: Modal Edit Button Only --- */
+
+.m-btn.btn-edit {
+    background: #fbbf24 !important; /* Yellow background */
+    color: #020617 !important;      /* Dark text for better contrast */
+    font-weight: 800 !important;
+    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3) !important;
+}
+
+.m-btn.btn-edit:hover {
+    background: #fcd34d !important; /* Slightly brighter on hover */
+    transform: scale(1.02);
+}
