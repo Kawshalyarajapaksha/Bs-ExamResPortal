@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login | BS Portal</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
 </head>
 <body>
     <nav>
@@ -35,28 +37,53 @@
     </div>
 
     <script>
-        function checkPass() {
-            const pass = document.getElementById('adminPass').value;
-            const error = document.getElementById('errorMsg');
-            
-            // මෙතන password එක "1" ලෙස update කරා
-            if(pass === "1") {
-                error.style.display = 'none';
-                location.href = "admin-panel.html"; 
-            } else {
-                error.style.display = 'block';
-                // Shake effect for error
-                const card = document.querySelector('.card');
-                card.style.transform = 'translateX(10px)';
-                setTimeout(() => card.style.transform = 'translateX(-10px)', 100);
-                setTimeout(() => card.style.transform = 'translateX(0)', 200);
-            }
-        }
+       async function checkPass() {
+    const user = "admin"; // දැනට එක admin කෙනෙක් ඉන්න නිසා username එක fixed කරමු
+    const pass = document.getElementById('adminPass').value;
+    const error = document.getElementById('errorMsg');
+    const loginBtn = document.querySelector('button');
 
-        // Enter key එකටත් වැඩ කරනවා
-        document.getElementById('adminPass').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') { checkPass(); }
-        });
+    if (!pass) return;
+
+    loginBtn.innerText = "⏳ CHECKING...";
+    loginBtn.disabled = true;
+
+    try {
+        // Database එකෙන් අදාළ username එකට password එක match වෙනවද බලනවා
+        const { data, error: dbError } = await window.supabaseClient
+            .from('admins')
+            .select('*')
+            .eq('username', user)
+            .eq('password', pass)
+            .single();
+
+        if (dbError || !data) {
+            // Password එක වැරදි නම්
+            error.style.display = 'block';
+            error.innerText = "❌ Invalid Password! Please try again.";
+            
+            // Shake effect
+            const card = document.querySelector('.card');
+            card.style.transform = 'translateX(10px)';
+            setTimeout(() => card.style.transform = 'translateX(-10px)', 100);
+            setTimeout(() => card.style.transform = 'translateX(0)', 200);
+            
+            loginBtn.innerText = "LOGIN";
+            loginBtn.disabled = false;
+        } else {
+            // Login සාර්ථකයි නම්
+            error.style.display = 'none';
+            // Session එකක් විදියට පාවිච්චි කරන්න (Security එකට පොඩි help එකක්)
+            localStorage.setItem('isAdmin', 'true');
+            location.href = "admin-panel.html"; 
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Something went wrong with database connection.");
+        loginBtn.innerText = "LOGIN";
+        loginBtn.disabled = false;
+    }
+}
     </script>
 </body>
 </html>

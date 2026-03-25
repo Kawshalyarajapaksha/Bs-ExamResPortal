@@ -7,6 +7,63 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
+
+<script>
+    async function checkPass() {
+        const user = "admin"; // Supabase table eke username eka
+        const pass = document.getElementById('adminPass').value;
+        const error = document.getElementById('errorMsg');
+        const loginBtn = document.querySelector('.btn');
+
+        if (!pass) return;
+
+        loginBtn.innerText = "⏳ CHECKING...";
+        loginBtn.disabled = true;
+
+        try {
+            // Database eken check කරනවා username සහ password match වෙනවද කියලා
+            const { data, error: dbError } = await window.supabaseClient
+                .from('admins')
+                .select('*')
+                .eq('username', user)
+                .eq('password', pass)
+                .single();
+
+            if (dbError || !data) {
+                // Password වැරදියි නම්
+                error.style.display = 'block';
+                error.innerText = "❌ Invalid Password! Please try again.";
+                
+                const card = document.querySelector('.card');
+                card.style.transform = 'translateX(10px)';
+                setTimeout(() => card.style.transform = 'translateX(-10px)', 100);
+                setTimeout(() => card.style.transform = 'translateX(0)', 200);
+                
+                loginBtn.innerText = "LOGIN";
+                loginBtn.disabled = false;
+            } else {
+                // Login සාර්ථකයි
+                error.style.display = 'none';
+                localStorage.setItem('isAdmin', 'true'); // Session එකක් save කරනවා
+                location.href = "admin-panel.html"; 
+            }
+        } catch (err) {
+            console.error(err);
+            error.style.display = 'block';
+            error.innerText = "❌ Database Connection Error!";
+            loginBtn.innerText = "LOGIN";
+            loginBtn.disabled = false;
+        }
+    }
+
+    // Enter key එක එබුවම Login වෙන්න
+    document.getElementById('adminPass').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            checkPass();
+        }
+    });
+</script>
+
     <style>
         .action-buttons {
             margin-top: 25px;
@@ -121,6 +178,7 @@
     </div>
 
     <script>
+        
         let tempResults = [];
 
     // Me functions deka kalin thibba ekata replace karanna
